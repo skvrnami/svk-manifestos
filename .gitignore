@@ -1,0 +1,12 @@
+manifesto_apikey.txt
+*.pdf
+*.udpipe
+*.Rproj
+.Rhistory
+.DS_Store
+.Rproj.user/
+
+convert_to_txt.R
+
+2016/*
+reuse_2016.R

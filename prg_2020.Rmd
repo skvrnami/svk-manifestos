@@ -1,0 +1,176 @@
+---
+title: "Anotované programové prohlášení slovenské vlády"
+subtitle: ""
+author: "Michael Škvrňák"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html: 
+    tufte_features: ["background", "italics"]
+    css: "custom.css"
+link-citations: yes
+---
+
+<style type="text/css">
+.highlight-sas {
+  background-color: rgba(121, 145, 61, 0.5);
+}
+
+.highlight-olano {
+  background-color: rgba(203, 211, 68, 0.5);
+}
+
+.highlight-zl {
+  background-color: rgba(255, 204, 0, 0.5);
+}
+
+.highlight-sme {
+  background-color: rgba(238, 0, 0, 0.5);
+}
+
+.highlight-ku {
+  background-color: rgba(0, 92, 168, 0.5);
+}
+
+.highlight-keywords {
+  background-color: #D3D3D3
+}
+
+/* Tooltip text */
+.highlight-keywords .tooltiptext {
+  visibility: hidden;
+  width: 600px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 1rem;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.highlight-keywords:hover .tooltiptext {
+  visibility: visible;
+}
+
+</style>
+
+## WORK IN PROGRESS
+
+_Kromě samotného obsahu programového prohlášení může být zajímavé také to, odkud se tam jednotlivé body dostaly. Tzn. které strany prosadily své programové priority do programové priority a jaké priority to jsou. Proto jsem vytvořil tenhle dokument, který ukazuje podobnosti mezi programovým prohlášením vlády a volebními programy jednotlivých stran. Výstupy je třeba ale brát s rezervou, protože podobnost mezi jednotlivými větami v obou druzích dokumentů byla určena automaticky za použití komputačních metod._
+
+_Věty z programového prohlášení podobné nějaké větě jsou odlišeny barevně podle stran:_
+
+<span class="highlight-olano">OĽaNO</span>
+<span class="highlight-sas">SaS</span>
+<span class="highlight-sme">Sme rodina</span>
+<span class="highlight-zl">Za ľudí</span>
+<span class="highlight-ku">Kresťanská únia</span>
+
+_Vybraná klíčová slova jsou označena takto:_
+<span class="highlight-keywords">Klíčové slovo<span class="tooltiptext">Text obsažený ve volebních programech související s klíčovými slovy</span></span>
+
+_Najetím myši na klíčové slovo se zobrazí věty obsahující daná klíčová slova z programů politických stran._
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+
+prg_text <- readRDS("prg_sentences_all_2020.RData") %>%
+  mutate(nadpis = grepl("#", text)) %>%
+  mutate(text = ifelse(grepl("OBNOVA DÔVERY V PRÁVNY ŠTÁT A ZABEZPEČENIE TOHO, ABY ZÁKON A SPRAVODLIVOSŤ PLATIL I PRE KAŽDÉHO ROVNAKO", text), "## OBNOVA DÔVERY V PRÁVNY ŠTÁT A ZABEZPEČENIE TOHO,  \n## ABY ZÁKON A SPRAVODLIVOSŤ PLATIL I PRE KAŽDÉHO ROVNAKO  ", text)) %>%
+  mutate(party_id = ifelse(nadpis, NA_character_, party_id), 
+         found_keyword = ifelse(nadpis, NA_character_, found_keyword)) %>%
+  mutate(party_id = ifelse(sentence_id == "GOV_28", NA_character_, party_id))
+```
+
+```{r, results='asis', echo=FALSE}
+# cat(prg_text$text[1:10])
+```
+
+```{r, echo=FALSE, results='asis'}
+highlight_party <- function(sentence, similar_sentence, party){
+  highlight_style <- case_when(
+    party == "SaS" ~ "highlight-sas", 
+    party == "Za ľudí" ~ "highlight-zl", 
+    party == "Sme Rodina" ~ "highlight-sme", 
+    party == "OĽaNO" ~ "highlight-olano",
+    party == "KÚ" ~ "highlight-ku"
+  )
+  paste0('<span class="', highlight_style, '">', 
+         sentence, 
+         "<span class=\"marginnote\">", 
+         "__", party, "__", ":", 
+         similar_sentence, "</span>",
+         "</span>")
+}
+
+highlight_keyword <- function(sentence, keyword, related_text){
+  keywords <- unlist(strsplit(keyword, " "))
+  keyword_length <- length(keywords)
+  first_keyword <- keywords[1]
+  sentence_words <- unlist(strsplit(sentence, " "))
+  which_keyword <- which(grepl(first_keyword, sentence_words))[1]
+  
+  if(!is.na(which_keyword) & which_keyword > 1){
+    before_keyword <- sentence_words[1:(which_keyword - 1)]  
+  }else{
+    before_keyword <- ""
+  }
+  
+  highlight <- sentence_words[which_keyword:(which_keyword + keyword_length - 1)]
+  after_keyword <- sentence_words[(which_keyword + keyword_length):
+                                    max(c(which_keyword + keyword_length, length(sentence_words)))]
+  after_keyword <- after_keyword[!is.na(after_keyword)]
+  
+  paste0(
+    c(before_keyword, 
+    paste0(c("<span class='highlight-keywords'>", 
+             paste0(highlight, collapse = " "), 
+             "<span class=\"tooltiptext\">",
+             related_text, "</span>",
+             "</span>"), collapse = ""), 
+    after_keyword), 
+    collapse = " "
+  )
+}
+
+# for(x in 1:nrow(prg_text)){
+#   print(x)
+#   keyword <- prg_text$found_keyword[x]
+#   party <- prg_text$party_id[x]
+#   
+#   text <- prg_text$text[x]
+#   if(!is.na(keyword)){
+#     text <- highlight_keyword(text, keyword, prg_text$related_text[x])
+#   }
+#   
+#   if(!is.na(party)){
+#     text <- highlight_party(text, prg_text$manifesto_text[x], party)
+#   }
+#   
+#   text
+# }
+
+purrr::map(1:nrow(prg_text), function(x) {
+  keyword <- prg_text$found_keyword[x]
+  party <- prg_text$party_id[x]
+  
+  text <- prg_text$text[x]
+  if(!is.na(keyword)){
+    text <- highlight_keyword(text, keyword, prg_text$related_text[x])
+  }
+  
+  if(!is.na(party)){
+    text <- highlight_party(text, prg_text$manifesto_text[x], party)
+  }
+  
+  text
+}) -> out
+
+invisible(purrr::map(out, function(x) cat(x, sep = "\n")))
+```
+
+
