@@ -31,6 +31,10 @@ link-citations: yes
   background-color: rgba(0, 92, 168, 0.5);
 }
 
+.highlight-ps {
+  background-color: rgba(51, 182, 229, 0.5);
+}
+
 .highlight-keywords {
   background-color: #D3D3D3
 }
@@ -69,6 +73,7 @@ _Věty z programového prohlášení podobné nějaké větě jsou odlišeny bar
 <span class="highlight-sme">Sme rodina</span>
 <span class="highlight-zl">Za ľudí</span>
 <span class="highlight-ku">Kresťanská únia</span>
+<span class="highlight-ps">Progresívne Slovensko/Spolu</span>
 
 _Vybraná klíčová slova jsou označena takto:_
 <span class="highlight-keywords">Klíčové slovo<span class="tooltiptext">Text obsažený ve volebních programech související s klíčovými slovy</span></span>
@@ -97,7 +102,8 @@ highlight_party <- function(sentence, similar_sentence, party){
     party == "Za ľudí" ~ "highlight-zl", 
     party == "Sme Rodina" ~ "highlight-sme", 
     party == "OĽaNO" ~ "highlight-olano",
-    party == "KÚ" ~ "highlight-ku"
+    party == "KÚ" ~ "highlight-ku", 
+    party == "PS" ~ "highlight-ps"
   )
   paste0('<span class="', highlight_style, '">', 
          sentence, 

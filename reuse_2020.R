@@ -22,6 +22,8 @@ sme_df <- load_manifesto("2020/sme_rodina.txt", "Sme Rodina") %>%
   filter(text != "")
 zl_df <- load_manifesto("2020/za-ludi.txt", "Za ľudí") %>%
   filter(text != "")
+ps_df <- load_manifesto("2020/ps-spolu.txt", "PS-Spolu") %>%
+  filter(text != "")
 
 # prg_2020 <- pdftools::pdf_text("2020/svk-prg-2020.pdf")
 # writeLines(prg_2020, "2020/svk-prg-2020.txt")
@@ -33,7 +35,7 @@ prg_lemmas <- udpipe_annotate(ud_model, x = prg_2020_txt$text,
                               doc_id = prg_2020_txt$sentence_id) %>% 
   as.data.frame
 
-party_df <- bind_rows(ku_df, olano_df, sas_df, sme_df, zl_df)
+party_df <- bind_rows(ku_df, olano_df, sas_df, sme_df, zl_df, ps_df)
 party_lemmas <- udpipe_annotate(ud_model, 
                                 x = party_df$text, 
                                 doc_id = party_df$sentence_id) %>% 
@@ -153,6 +155,12 @@ zl_sentences <- party_sentences_clean %>%
   mutate(n_char = purrr::map_int(manifesto_text, nchar)) %>%
   filter(n_char > 10)
 
+ps_sentences <- party_sentences_clean %>%
+  filter(grepl("PS", doc_id)) %>%
+  mutate(n_char = purrr::map_int(manifesto_text, nchar)) %>%
+  filter(n_char > 10)
+
+
 # calculate_local_align <- function(a, b){
 #   align_local(a, b)
 # }
@@ -237,6 +245,15 @@ sas_simil24 <- calc_max_similarity(sas_sentences[7201:7500, ], prg_sentences_cle
 sas_simil25 <- calc_max_similarity(sas_sentences[7501:7800, ], prg_sentences_clean)
 sas_simil26 <- calc_max_similarity(sas_sentences[7801:nrow(sas_sentences), ], prg_sentences_clean)
 
+ps_simil1 <- calc_max_similarity(ps_sentences[1:300, ], prg_sentences_clean)
+ps_simil2 <- calc_max_similarity(ps_sentences[301:600, ], prg_sentences_clean)
+ps_simil3 <- calc_max_similarity(ps_sentences[601:900, ], prg_sentences_clean)
+ps_simil4 <- calc_max_similarity(ps_sentences[901:1200, ], prg_sentences_clean)
+ps_simil5 <- calc_max_similarity(ps_sentences[1201:1500, ], prg_sentences_clean)
+ps_simil6 <- calc_max_similarity(ps_sentences[1501:1800, ], prg_sentences_clean)
+ps_simil7 <- calc_max_similarity(ps_sentences[1801:2100, ], prg_sentences_clean)
+ps_simil8 <- calc_max_similarity(ps_sentences[2101:2400, ], prg_sentences_clean)
+ps_simil9 <- calc_max_similarity(ps_sentences[2401:2700, ], prg_sentences_clean)
 
 olano_simil <- bind_rows(ol_simil1, ol_simil2, ol_simil3, ol_simil4, ol_simil5, ol_simil6, 
                        ol_simil7, ol_simil8, ol_simil9)
@@ -249,8 +266,10 @@ sas_simil <- bind_rows(sas_simil1, sas_simil2, sas_simil3, sas_simil4, sas_simil
                      sas_simil13, sas_simil14, sas_simil15, sas_simil16, sas_simil17, sas_simil18, 
                      sas_simil19, sas_simil20, sas_simil21, sas_simil22, sas_simil23, sas_simil24, 
                      sas_simil25, sas_simil26)
+ps_simil <- bind_rows(ps_simil1, ps_simil2, ps_simil3, ps_simil4, ps_simil5, 
+                      ps_simil6, ps_simil7, ps_simil8, ps_simil9)
 
-all_simil <- bind_rows(ku_simil, olano_simil, sme_simil, zl_simil, sas_simil)
+all_simil <- bind_rows(ku_simil, olano_simil, sme_simil, zl_simil, sas_simil, ps_simil)
 all_simil %>% 
   group_by(gov_sentence_id) %>%
   arrange(desc(max_simil)) %>%
