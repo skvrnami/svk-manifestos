@@ -60,7 +60,7 @@ link-citations: yes
 
 ## WORK IN PROGRESS
 
-_Kromě samotného obsahu programového prohlášení může být zajímavé také to, odkud se tam jednotlivé body dostaly. Tzn. které strany prosadily své programové priority do programové priority a jaké priority to jsou. Proto jsem vytvořil tenhle dokument, který ukazuje podobnosti mezi programovým prohlášením vlády a volebními programy jednotlivých stran. Výstupy je třeba ale brát s rezervou, protože podobnost mezi jednotlivými větami v obou druzích dokumentů byla určena automaticky za použití komputačních metod._
+_Kromě samotného obsahu programového prohlášení může být zajímavé také to, odkud se tam jednotlivé body dostaly. Tzn. které strany prosadily své programové priority do programové priority a jaké priority to jsou. Proto jsem vytvořil tenhle dokument, který ukazuje podobnosti mezi programovým prohlášením vlády a volebními programy jednotlivých stran. Výstupy je třeba ale brát s rezervou, protože podobnost mezi jednotlivými větami v obou druzích dokumentů byla určena automaticky za použití komputačních metod. Materiály pro replikaci jsou [tady](https://github.com/skvrnami/svk-manifestos)._
 
 _Věty z programového prohlášení podobné nějaké větě jsou odlišeny barevně podle stran:_
 

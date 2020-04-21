@@ -2,3 +2,7 @@ body {
   font-family: Georgia;
 }
 
+a {
+  text-decoration: underline;
+  font-weight: bold;
+}
